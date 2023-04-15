@@ -17,15 +17,7 @@ inter = interception()
 inter.set_filter(interception.is_mouse, interception_filter_mouse_state.INTERCEPTION_FILTER_MOUSE_ALL.value)
 
 # TODO: get device without moving
-print('MOVE YOUR MOUSE SO THAT THE PROGRAM CAN INTERCEPT IT')
-device = inter.wait()
-print('MOUSE INTERCEPTED SUCCESSFULLY')
-
-BASELINE_STROKE = inter.receive(device)
 SCREEN_WIDTH, SCREEN_HEIGHT = ctr.size()
-GAME_WINDOW = None
-
-
 
 DIRS = {
     'forward': 'w',
@@ -47,8 +39,15 @@ MOUSE_DIRS = {
 }
 
 
-def init_stroke():
-    return copy.deepcopy(BASELINE_STROKE)
+class interception_data():
+    def __init__(self, device, window, BASELINE_STROKE) -> None:
+        self.device = device
+        self.window = window
+        self.BASELINE_STROKE = BASELINE_STROKE
+
+
+def init_stroke(idata: interception_data):
+    return copy.deepcopy(idata.BASELINE_STROKE)
 
 
 def move(dir: str, dur=1) -> None:
@@ -95,9 +94,9 @@ def focus(window):
     click(window.center)
 
 
-def execute(cmd: str):
+def execute(idata: interception_data, cmd: str):
     if cmd in COMMANDS:
-        focus(GAME_WINDOW)
+        focus(idata.window)
         threading.Thread(target=COMMANDS[cmd]).start()
     else:
         print(f"No such command.\n{COMMANDS.keys()}")
@@ -107,6 +106,12 @@ def prepare_game():
     format = "%(asctime)s: %(message)s"
     logging.basicConfig(format=format, level=logging.INFO,
                         datefmt="%H:%M:%S")
+
+    print('MOVE YOUR MOUSE SO THAT THE PROGRAM CAN INTERCEPT IT')
+    device = inter.wait()
+    print('MOUSE INTERCEPTED SUCCESSFULLY')
+
+    BASELINE_STROKE = inter.receive(device)
 
     windows = gw.getAllTitles()
     logging.info(f'Windows: {windows}')
@@ -119,10 +124,12 @@ def prepare_game():
         raise Exception("Minecraft is not running. Exiting program.")
     
     focus(GAME_WINDOW)
+
+    return device, GAME_WINDOW, BASELINE_STROKE 
     
     #disable unfocuse autopause in minecraft
-    keyDown('f3')
-    keyDown('p')
-    keyUp('f3')
-    keyUp('p')
+    # keyDown('f3')
+    # keyDown('p')
+    # keyUp('f3')
+    # keyUp('p')
     #---------------------------------------
