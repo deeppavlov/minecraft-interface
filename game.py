@@ -95,11 +95,15 @@ def focus(window):
 
 
 def execute(idata: interception_data, cmd: str):
+    for command in COMMANDS:
+        if command in cmd:
+            cmd = command
+            break
     if cmd in COMMANDS:
         focus(idata.window)
         threading.Thread(target=COMMANDS[cmd]).start()
     else:
-        print(f"No such command.\n{COMMANDS.keys()}")
+        print(f"No such command - {cmd}.\n{COMMANDS.keys()}")
 
 
 def prepare_game():
