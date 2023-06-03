@@ -8,16 +8,26 @@ from flask import jsonify
 
 from game import execute, prepare_game, interception_data, COMMANDS
 
+
 REQUEST_WAIT_TIME = 3
+EXECUTING = None
+
 
 app = Flask(__name__)
 idata = None
 
+
+@app.route("/is_command_performed", method="POST")
+def is_command_performed():
+    return {"result": True if EXECUTING.is_alive() else False}
+
+
 def recieve_commands(server, endpoint, port):
+    global EXECUTING
     r = requests.request("POST", f"{server}/{endpoint}")
     cmd = r.json() if 200 <= r.status_code <= 299 else None
     if cmd.replace("_", " ") in COMMANDS:
-        execute(idata, cmd)
+        EXECUTING = threading.Thread(execute(idata, cmd))
     time.sleep(REQUEST_WAIT_TIME)
 
 
