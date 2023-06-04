@@ -4,7 +4,6 @@ import logging
 import pyautogui as ctr
 import pygetwindow as gw
 import copy
-import cv2 as cv
 
 from pyautogui import keyDown, keyUp, click
 from functools import partial
@@ -62,15 +61,14 @@ def move_mouse_native(x: int, y: int):
         stroke.x += 1 if x > 0 else -1 if x < 0 else 0
         stroke.y += 1 if y > 0 else -1 if y < 0 else 0
         inter.send(device, stroke)
-        time.sleep(2/100)
-        print(f'{i+1}/100')
+        time.sleep(2 / 100)
+        print(f'{i + 1}/100')
 
 
 def move_mouse(dir: str, dist=100, dur=1):
     x_offset = ((dir in MOUSE_DIRS['H']) * dist * MOUSE_DIRS['H'][dir]) if dir in MOUSE_DIRS['H'] else 0
     y_offset = ((dir in MOUSE_DIRS['V']) * dist * MOUSE_DIRS['V'][dir]) if dir in MOUSE_DIRS['V'] else 0
     threading.Thread(target=move_mouse_native(x_offset, y_offset)).start()
-    
 
 
 COMMANDS = {
@@ -124,16 +122,16 @@ def prepare_game():
         game_window = list(filter(lambda x: x.find('Minecraft') != -1, windows))[0]
         logging.info(f"Game window: {game_window}")
         GAME_WINDOW = gw.getWindowsWithTitle(game_window)[0]
-    except:
+    except Exception:
         raise Exception("Minecraft is not running. Exiting program.")
-    
+
     focus(GAME_WINDOW)
 
-    return device, GAME_WINDOW, BASELINE_STROKE 
-    
-    #disable unfocuse autopause in minecraft
+    return device, GAME_WINDOW, BASELINE_STROKE
+
+    # disable unfocuse autopause in minecraft
     # keyDown('f3')
     # keyDown('p')
     # keyUp('f3')
     # keyUp('p')
-    #---------------------------------------
+    #----------------------------------------

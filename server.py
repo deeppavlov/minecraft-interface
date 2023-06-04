@@ -3,8 +3,7 @@ import threading
 import requests
 import time
 
-from flask import Flask, request
-from flask import jsonify
+from flask import Flask
 
 from game import execute, prepare_game, interception_data, COMMANDS
 
@@ -27,7 +26,7 @@ def recieve_commands(server, endpoint, port):
     r = requests.request("POST", f"{server}/{endpoint}")
     cmd = r.json() if 200 <= r.status_code <= 299 else None
     if cmd.replace("_", " ") in COMMANDS:
-        EXECUTING = threading.Thread(execute(idata, cmd))
+        EXECUTING = execute(idata, cmd)
     time.sleep(REQUEST_WAIT_TIME)
 
 
