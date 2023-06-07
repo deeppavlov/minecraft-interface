@@ -5,7 +5,7 @@ import time
 
 from flask import Flask
 
-from game import execute, prepare_game, interception_data, COMMANDS
+from game import execute, COMMANDS#, prepare_game, interception_data
 
 
 REQUEST_WAIT_TIME = 3
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     parser.add_argument('--set_cmd_endpoint')
     parser.add_argument('--recieve_endpoint')
     args = parser.parse_args()
-    idata = interception_data(*prepare_game())
+    #idata = interception_data(*prepare_game())
     threading.Thread(app.run(host=args.ip, port=int(args.port), debug=True, use_reloader=False))
     requests.request("POST", f"{args.server_ip}/{args.set_cmd_endpoint}")
     recieve_commands(args.server_ip, args.recieve_endpoint, args.server_port)
