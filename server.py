@@ -16,18 +16,21 @@ app = Flask(__name__)
 idata = None
 
 
-@app.route("/is_command_performed", method="POST")
+@app.route("/is_command_performed", methods=["POST"])
 def is_command_performed():
     return {"result": True if EXECUTING.is_alive() else False}
 
 
-def recieve_commands(server, endpoint, port):
+def recieve_commands(server, port):
     global EXECUTING
-    r = requests.request("POST", f"{server}/{endpoint}")
-    cmd = r.json() if 200 <= r.status_code <= 299 else None
-    if cmd.replace("_", " ") in COMMANDS:
-        EXECUTING = execute(idata, cmd)
-    time.sleep(REQUEST_WAIT_TIME)
+    while True:
+        print("recieving commands from dream...")
+        r = requests.request("POST", f"https://{server}/recieve_commands")
+        print(f"request status: {r.status_code}")
+        cmd = r.json() if 200 <= r.status_code <= 299 else None
+        if cmd.replace("_", " ") in COMMANDS:
+            EXECUTING = execute(idata, cmd)
+        time.sleep(REQUEST_WAIT_TIME)
 
 
 if __name__ == '__main__':
@@ -36,10 +39,10 @@ if __name__ == '__main__':
     parser.add_argument('--port')
     parser.add_argument('--server_ip')
     parser.add_argument('--server_port')
-    parser.add_argument('--set_cmd_endpoint')
-    parser.add_argument('--recieve_endpoint')
     args = parser.parse_args()
     #idata = interception_data(*prepare_game())
-    threading.Thread(app.run(host=args.ip, port=int(args.port), debug=True, use_reloader=False))
-    requests.request("POST", f"{args.server_ip}/{args.set_cmd_endpoint}")
-    recieve_commands(args.server_ip, args.recieve_endpoint, args.server_port)
+    print("sending commands list to ros-server")
+    r = requests.request("POST", f"https://{args.server_ip}/set_commands", json={'commands': COMMANDS})
+    print(f"commands sent, status = {r.status_code}")
+    threading.Thread(recieve_commands(args.server_ip, args.server_port))
+    app.run(host=args.ip, port=int(args.port), debug=True, use_reloader=False) # debug mode wants to run flask in main thread
