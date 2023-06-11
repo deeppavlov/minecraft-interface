@@ -13,6 +13,9 @@ REQUEST_WAIT_TIME = 3
 EXECUTING = None
 
 
+COMMANDS = [item.replace(" ", "_") for item in COMMANDS.keys()]
+
+
 app = Flask(__name__)
 idata = None
 
@@ -31,9 +34,13 @@ def recieve_commands(server, port):
         print(f"request status: {r.status_code}")
         cmd = r.json()['command'] if 200 <= r.status_code <= 299 else ""
         print(f"recieved: {cmd}")
-        command = ""
-        if cmd and any(command in cmd.replace("_", " ") for command in COMMANDS):
-            EXECUTING = execute(idata, command)
+        exec_command = ""
+        for command in COMMANDS:
+            if cmd and command in cmd:
+                exec_command = command
+                break
+        if cmd and any(command in cmd for command in COMMANDS):
+            EXECUTING = execute(idata, command.replace("_", " "))
         time.sleep(REQUEST_WAIT_TIME)
 
 

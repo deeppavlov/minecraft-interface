@@ -110,10 +110,10 @@ def prepare_game():
                         datefmt="%H:%M:%S")
 
     print('MOVE YOUR MOUSE SO THAT THE PROGRAM CAN INTERCEPT IT')
-    device = inter.wait()
+    device = None #inter.wait()
     print('MOUSE INTERCEPTED SUCCESSFULLY')
 
-    BASELINE_STROKE = inter.receive(device)
+    BASELINE_STROKE = None #inter.receive(device)
 
     windows = gw.getAllTitles()
     logging.info(f'Windows: {windows}')
