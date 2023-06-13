@@ -86,7 +86,7 @@ COMMANDS = {
 mouse_x, mouse_y = ctr.position()
 
 
-def focus(window):
+def focus(window): # FIXME: make focus really focus, not min-max, it's annoying to look at now
     window.minimize()
     window.maximize()
     click(window.center)
