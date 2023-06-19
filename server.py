@@ -13,9 +13,6 @@ REQUEST_WAIT_TIME = 3
 EXECUTING = None
 
 
-COMMANDS = [item.replace(" ", "_") for item in COMMANDS.keys()]
-
-
 app = Flask(__name__)
 idata = None
 
@@ -32,15 +29,12 @@ def recieve_commands(server, port):
         headers = {'Accept': 'application/json'}
         r = requests.post(url=f"http://{server}:{port}/recieve_command", headers=headers)
         print(f"request status: {r.status_code}")
-        cmd = r.json()['command'] if 200 <= r.status_code <= 299 else ""
-        print(f"recieved: {cmd}")
-        exec_command = ""
+        recv_cmd = r.json()['command'] if 200 <= r.status_code <= 299 else ""
+        print(f"recieved: {recv_cmd}")
         for command in COMMANDS:
-            if cmd and command in cmd:
-                exec_command = command
+            if recv_cmd and command in recv_cmd:
+                EXECUTING = execute(idata, command)
                 break
-        if cmd and any(command in cmd for command in COMMANDS):
-            EXECUTING = execute(idata, command.replace("_", " "))
         time.sleep(REQUEST_WAIT_TIME)
 
 
@@ -52,7 +46,7 @@ if __name__ == '__main__':
     parser.add_argument('--server_port')
     args = parser.parse_args()
     idata = interception_data(*prepare_game())
-    print("sending commands list to ros-server")
+    print(f"sending commands list to ros-server: {COMMANDS}")
     r = requests.request("POST", f"http://{args.server_ip}:{args.server_port}/set_commands", json={'commands': COMMANDS})
     print(f"commands sent, status = {r.status_code}")
     threading.Thread(recieve_commands(args.server_ip, args.server_port))

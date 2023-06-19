@@ -72,24 +72,25 @@ def move_mouse(dir: str, dist=100, dur=1):
 
 
 COMMANDS = {
-    'move forward': partial(move, dir='forward'),
-    'move left': partial(move, dir='left'),
-    'move back': partial(move, dir='back'),
-    'move right': partial(move, dir='right'),
-    'face up': partial(move_mouse, dir='up'),
-    'face left': partial(move_mouse, dir='left'),
-    'face down': partial(move_mouse, dir='down'),
-    'face right': partial(move_mouse, dir='right'),
+    'move_forward': partial(move, dir='forward'),
+    'move_left': partial(move, dir='left'),
+    'move_back': partial(move, dir='back'),
+    'move_right': partial(move, dir='right'),
+    'face_up': partial(move_mouse, dir='up'),
+    'face_left': partial(move_mouse, dir='left'),
+    'face_down': partial(move_mouse, dir='down'),
+    'face_right': partial(move_mouse, dir='right'),
 }
 
 
 mouse_x, mouse_y = ctr.position()
 
 
-def focus(window): # FIXME: make focus really focus, not min-max, it's annoying to look at now
-    window.minimize()
-    window.maximize()
-    click(window.center)
+def focus(window):
+    window.activate()
+    # window.minimize()
+    # window.maximize()
+    # click(window.center)
 
 
 def execute(idata: interception_data, cmd: str):
