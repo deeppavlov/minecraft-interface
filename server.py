@@ -2,11 +2,18 @@ import argparse
 import threading
 import requests
 import time
+import importlib
 
 from flask import Flask
 
-#TODO: import modules based on cli args
-from game_minecraft import execute, COMMANDS, prepare_game, interception_data
+
+#from game_blank import execute, COMMANDS#, prepare_game, interception_data
+
+
+
+COMMANDS: list = []
+execute: callable = lambda: True
+
 
 
 REQUEST_WAIT_TIME = 3
@@ -44,8 +51,13 @@ if __name__ == '__main__':
     parser.add_argument('--port')
     parser.add_argument('--server_ip')
     parser.add_argument('--server_port')
+    parser.add_argument('--conn')
     args = parser.parse_args()
-    idata = interception_data(*prepare_game())
+    #idata = interception_data(*prepare_game())
+
+    COMMANDS = importlib.import_module(args.conn).COMMANDS
+    execute = importlib.import_module(args.conn).execute
+
     print(f"sending commands list to ros-server: {COMMANDS}")
     r = requests.request("POST", f"http://{args.server_ip}:{args.server_port}/set_commands", json={'commands': COMMANDS})
     print(f"commands sent, status = {r.status_code}")
