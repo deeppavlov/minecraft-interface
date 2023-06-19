@@ -7,13 +7,8 @@ import importlib
 from flask import Flask
 
 
-#from game_blank import execute, COMMANDS#, prepare_game, interception_data
-
-
-
 COMMANDS: list = []
 execute: callable = lambda: True
-
 
 
 REQUEST_WAIT_TIME = 3
@@ -53,13 +48,17 @@ if __name__ == '__main__':
     parser.add_argument('--server_port')
     parser.add_argument('--conn')
     args = parser.parse_args()
-    #idata = interception_data(*prepare_game())
+    idata = None
+    if args.conn == "game_minecraft":
+        interception_data: callable = importlib.import_module(args.conn).interception_data
+        prepare_game: callable = importlib.import_module(args.conn).prepare_game
+        idata = interception_data(*prepare_game())
 
     COMMANDS = importlib.import_module(args.conn).COMMANDS
     execute = importlib.import_module(args.conn).execute
 
-    print(f"sending commands list to ros-server: {COMMANDS}")
-    r = requests.request("POST", f"http://{args.server_ip}:{args.server_port}/set_commands", json={'commands': COMMANDS})
+    print(f"sending commands list to ros-server: {list(COMMANDS.keys())}")
+    r = requests.request("POST", f"http://{args.server_ip}:{args.server_port}/set_commands", json={'commands': list(COMMANDS.keys())})
     print(f"commands sent, status = {r.status_code}")
     threading.Thread(recieve_commands(args.server_ip, args.server_port))
     app.run(host=args.ip, port=int(args.port), debug=True, use_reloader=False) # debug mode wants to run flask in main thread

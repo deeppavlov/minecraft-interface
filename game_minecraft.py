@@ -2,6 +2,7 @@ import time
 import threading
 import logging
 import pyautogui as ctr
+import pywinauto
 import pygetwindow as gw
 import copy
 
@@ -87,7 +88,8 @@ mouse_x, mouse_y = ctr.position()
 
 
 def focus(window):
-    window.activate()
+    if window.isActive == False:
+        pywinauto.application.Application().connect(handle=window._hWnd).top_window().set_focus()
     # window.minimize()
     # window.maximize()
     # click(window.center)
