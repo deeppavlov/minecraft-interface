@@ -48,7 +48,6 @@ if __name__ == '__main__':
     parser.add_argument('--server_port')
     parser.add_argument('--conn')
     args = parser.parse_args()
-    idata = None
     if args.conn == "game_minecraft":
         interception_data: callable = importlib.import_module(args.conn).interception_data
         prepare_game: callable = importlib.import_module(args.conn).prepare_game

@@ -1,8 +1,8 @@
 import time
 import threading
 import logging
-import pyautogui as ctr
 import pywinauto
+import pyautogui as ctr
 import pygetwindow as gw
 import copy
 
@@ -90,9 +90,6 @@ mouse_x, mouse_y = ctr.position()
 def focus(window):
     if window.isActive == False:
         pywinauto.application.Application().connect(handle=window._hWnd).top_window().set_focus()
-    # window.minimize()
-    # window.maximize()
-    # click(window.center)
 
 
 def execute(idata: interception_data, cmd: str):
@@ -132,7 +129,7 @@ def prepare_game():
 
     return device, GAME_WINDOW, BASELINE_STROKE
 
-    # disable unfocuse autopause in minecraft
+    # disable unfocus autopause in minecraft
     # keyDown('f3')
     # keyDown('p')
     # keyUp('f3')

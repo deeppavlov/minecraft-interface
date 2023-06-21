@@ -1,4 +1,7 @@
-COMMANDS = ['move_forward', 'move_backward']
+COMMANDS = {
+    'move_forward': None,
+    'move_back': None,
+}
 
 
 def execute(idata, cmd):
