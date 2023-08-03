@@ -24,15 +24,15 @@ def is_command_performed():
     return {"result": True if EXECUTING.is_alive() else False}
 
 
-def recieve_commands(server, port):
+def receive_commands(server, port):
     global EXECUTING
     while True:
         print("recieving commands from dream...")
         headers = {'Accept': 'application/json'}
-        r = requests.post(url=f"http://{server}:{port}/recieve_command", headers=headers)
+        r = requests.post(url=f"http://{server}:{port}/receive_command", headers=headers)
         print(f"request status: {r.status_code}")
         recv_cmd = r.json()['command'] if 200 <= r.status_code <= 299 else ""
-        print(f"recieved: {recv_cmd}")
+        print(f"received: {recv_cmd}")
         for command in COMMANDS:
             if recv_cmd and command in recv_cmd:
                 EXECUTING = execute(idata, command)
@@ -59,5 +59,5 @@ if __name__ == '__main__':
     print(f"sending commands list to ros-server: {list(COMMANDS.keys())}")
     r = requests.request("POST", f"http://{args.server_ip}:{args.server_port}/set_commands", json={'commands': list(COMMANDS.keys())})
     print(f"commands sent, status = {r.status_code}")
-    threading.Thread(recieve_commands(args.server_ip, args.server_port))
+    threading.Thread(receive_commands(args.server_ip, args.server_port))
     app.run(host=args.ip, port=int(args.port), debug=True, use_reloader=False) # debug mode wants to run flask in main thread
