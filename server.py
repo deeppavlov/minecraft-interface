@@ -27,7 +27,7 @@ def is_command_performed():
 def receive_commands(server, port):
     global EXECUTING
     while True:
-        print("recieving commands from dream...")
+        print("receiving commands from dream...")
         headers = {'Accept': 'application/json'}
         r = requests.post(url=f"http://{server}:{port}/receive_command", headers=headers)
         print(f"request status: {r.status_code}")

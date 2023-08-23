@@ -1,6 +1,6 @@
 COMMANDS = {
     'move_forward': None,
-    'move_back': None,
+    'move_backward': None,
 }
 
 
